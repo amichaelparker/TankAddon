@@ -175,9 +175,11 @@ function addon:CreateFrames()
 
     self.DragHandle = CreateFrame("Button", "TankAddonDragHandle", self.GroupFrame, BackdropTemplateMixin and "BackdropTemplate")
     self.DragHandle:SetSize(8, 10) -- Small square size
-    self.DragHandle:SetPoint("BOTTOMLEFT", self.GroupFrame, "LEFT", -15, -15) -- Position above the group frame
+    self.DragHandle:SetPoint("BOTTOMLEFT", self.GroupFrame, "LEFT", -8, -8) -- Position above the group frame
     self.DragHandle:SetBackdrop({ bgFile = "Interface/Tooltips/UI-Tooltip-Background" })
-    self.DragHandle:SetBackdropColor(1, 0.4, 1, 0.8) -- Gray color
+    local _, class, _ = UnitClass("player")
+    local classColor = C_ClassColor.GetClassColor(class)
+    self.DragHandle:SetBackdropColor(classColor.r, classColor.g, classColor.b, 0.8)
     self.DragHandle:EnableMouse(true)
     self.DragHandle:RegisterForDrag("LeftButton")
     self.DragHandle:RegisterForClicks("AnyUp") -- Enable click handling
