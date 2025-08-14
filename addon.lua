@@ -289,14 +289,18 @@ function addon:CreateFrames()
             local maxRows = 5
             local col = math.floor(index / maxRows)
             local row = index % maxRows
-            xPos = col * (db.unit_width + db.unit_padding)
-            yPos = -row * (db.unit_height + db.unit_padding)
+            xPos = db.frame_padding + (col * (db.unit_width + db.unit_padding))
+            yPos = db.frame_padding + (row * (db.unit_height + db.unit_padding))
+            -- xPos = col * (db.unit_width + db.unit_padding)
+            -- yPos = -row * (db.unit_height + db.unit_padding)
         else
             -- Fill horizontally first (up to unit_columns), then add rows
             local col = index % db.unit_columns
             local row = math.floor(index / db.unit_columns)
-            xPos = col * (db.unit_width + db.unit_padding)
-            yPos = -row * (db.unit_height + db.unit_padding)
+            xPos = db.frame_padding + (col * (db.unit_width + db.unit_padding))
+            yPos = db.frame_padding + (row * (db.unit_height + db.unit_padding))
+            -- xPos = col * (db.unit_width + db.unit_padding)
+            -- yPos = -row * (db.unit_height + db.unit_padding)
         end
 
         button:SetPoint("BOTTOMLEFT", self.GroupFrame, xPos, yPos)
@@ -502,7 +506,7 @@ function addon:UpdateGroupFrameUnits()
             primaryFrame.text:SetText(string.sub(UnitName("player"), 1, 5) .. "...")
         end
         primaryFrame:ClearAllPoints()
-        primaryFrame:SetPoint("BOTTOMLEFT", self.GroupFrame, 0, 0)
+        primaryFrame:SetPoint("BOTTOMLEFT", self.GroupFrame, db.frame_padding, db.frame_padding)
         primaryFrame:Show()
 
         local unitFrameIndex = 2
@@ -533,14 +537,14 @@ function addon:UpdateGroupFrameUnits()
                         -- Fill vertically first, then add columns
                         local col = math.floor(index / rows)
                         local row = index % rows
-                        xPos = primaryX + (col * (db.unit_width + db.unit_padding))
-                        yPos = primaryY + (row * (db.unit_height + db.unit_padding))
+                        xPos = db.frame_padding + (col * (db.unit_width + db.unit_padding))
+                        yPos = db.frame_padding + (row * (db.unit_height + db.unit_padding))
                     else
                         -- Fill horizontally first, then add rows
                         local row = math.floor(index / columns)
                         local col = index % columns
-                        xPos = primaryX + (col * (db.unit_width + db.unit_padding))
-                        yPos = primaryY + (row * (db.unit_height + db.unit_padding))
+                        xPos = db.frame_padding + (col * (db.unit_width + db.unit_padding))
+                        yPos = db.frame_padding + (row * (db.unit_height + db.unit_padding))
                     end
 
                     unitFrame:ClearAllPoints()
@@ -554,10 +558,10 @@ function addon:UpdateGroupFrameUnits()
                 if unit ~= "player" then
                     local unitName = data["name"]
                     local unitFrame = self.GroupFrame:GetUnitFrame(format("UnitFrame%d", unitFrameIndex))
-    
+
                     if unitFrame then
                         unitFrame:SetBackdropColor(0, 0, 0, 1)
-    
+
                         if unitName ~= UnitName("player") then
                             if playerRole == "TANK" and tauntSpellName then
                                 unitFrame:SetAttribute("type", "spell")
@@ -568,29 +572,31 @@ function addon:UpdateGroupFrameUnits()
                                 unitFrame:SetAttribute("unit", data["target"])
                             end
                         end
-    
+
                         unitFrame.unit = unit
                         unitFrame:SetRole(UnitGroupRolesAssigned(unit))
-    
-                        -- Calculate position relative to first frame
-                        local index = unitFrameIndex - 2
+
+                        -- Calculate position - Using same logic as test frames
+                        local index = unitFrameIndex - 1  -- Same indexing as test frames
                         local xPos, yPos
 
                         if db.vertical_orientation then
-                            local col = math.floor(index / (rows - 1))
-                            local row = index % (rows - 1) + 1
+                            -- Fill vertically first, then add columns
+                            local col = math.floor(index / rows)
+                            local row = index % rows
                             xPos = db.frame_padding + (col * (db.unit_width + db.unit_padding))
                             yPos = db.frame_padding + (row * (db.unit_height + db.unit_padding))
                         else
-                            local row = math.floor(index / (columns - 1))
-                            local col = index % (columns - 1) + 1
+                            -- Fill horizontally first, then add rows
+                            local row = math.floor(index / columns)
+                            local col = index % columns
                             xPos = db.frame_padding + (col * (db.unit_width + db.unit_padding))
                             yPos = db.frame_padding + (row * (db.unit_height + db.unit_padding))
                         end
 
                         unitFrame:ClearAllPoints()
                         unitFrame:SetPoint("BOTTOMLEFT", self.GroupFrame, xPos, yPos)
-    
+
                         if DEBUG then
                             unitFrame.text:SetWidth(db.unit_width - 4)
                             local debugText = strjoin("_", tostring(unitFrameIndex), UnitName(unit) or unitName)
@@ -605,12 +611,10 @@ function addon:UpdateGroupFrameUnits()
                                 unitFrame.text:SetText(string.sub(UnitName(unit), 1, 5) .. "...")
                             end
                         end
-    
+
                         unitFrame:Show()
-                    else
-                        sbd:log_debug("UpdateGroupFrameUnits nil unitFrame for unit:", unit)
                     end
-    
+
                     unitFrameIndex = unitFrameIndex + 1
                 end
             end
