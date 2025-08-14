@@ -1,1 +1,1 @@
-WoW addon "TankAddon Reloaded"S... reloaded for 11.2.
+WoW addon "TankAddon Reloaded"... reloaded for 11.2.
